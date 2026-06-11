@@ -52,3 +52,18 @@ jobs:
             --pull-request ${{ github.event.pull_request.number }} \
             --github-token ${{ secrets.GITHUB_TOKEN }} \
             --behavior update
+
+      - name: Check cost threshold
+        working-directory: infra
+        run: |
+          infracost diff \
+            --path plan.json \
+            --format json \
+            --out-file diff.json
+
+          monthly_diff=$(jq '.diffTotalMonthlyCost' diff.json)
+
+          if (( $(echo "$monthly_diff > 500" | bc -l) )); then
+            echo "Cost increase is more than $500/month. Approval required."
+            exit 1
+          fi
