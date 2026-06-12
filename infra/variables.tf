@@ -14,3 +14,8 @@ variable "instance_type" {
 variable "root_volume_size" {
   default = 20
 }
+
+# Below variable to test secrets scanner
+variable "AWS_SECRET_ACCESS_KEY" {
+  default = "123"
+}
