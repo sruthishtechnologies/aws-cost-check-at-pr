@@ -18,11 +18,11 @@ provider "aws" {
 resource "aws_instance" "demo" {
   ami           = var.ami_id
   instance_type = var.instance_type
-  #associate_public_ip_address = false
+  associate_public_ip_address = false
 
   root_block_device {
     volume_size = var.root_volume_size
-    volume_type = "gp2"
+    volume_type = "gp3"
   }
 
   tags = {
