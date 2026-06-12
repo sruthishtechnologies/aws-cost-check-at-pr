@@ -79,7 +79,7 @@ jobs:
 
           monthly_diff=$(jq '.diffTotalMonthlyCost' diff.json)
 
-          if (( $(echo "$monthly_diff > 500" | bc -l) )); then
-            echo "Cost increase is more than $500/month. Approval required."
+          if (( $(echo "$monthly_diff > 8" | bc -l) )); then
+            echo "Cost increase is more than $8/month. Approval required."
             exit 1
           fi
