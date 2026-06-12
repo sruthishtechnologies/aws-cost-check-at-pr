@@ -49,3 +49,12 @@ jobs:
         run: |
           conftest test infra/plan.json \
             --policy policies/terraform
+
+      - name: Check Exception Label
+        id: exception
+        run: |
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'policy-exception-approved') }}" == "true" ]]; then
+            echo "approved=true" >> $GITHUB_OUTPUT
+          else
+            echo "approved=false" >> $GITHUB_OUTPUT
+          fi
