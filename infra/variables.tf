@@ -1,6 +1,6 @@
 # variable.tf file
 variable "aws_region" {
-  default = "us-east-1"
+  default = "ap-south-2"
 }
 
 variable "ami_id" {
@@ -8,7 +8,7 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  default = "t3.micro"
+  default = "t4g.micro"
 }
 
 variable "root_volume_size" {
