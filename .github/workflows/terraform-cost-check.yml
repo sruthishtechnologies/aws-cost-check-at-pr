@@ -1,0 +1,99 @@
+name: terraform-cost-check
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  infracost:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::824090260951:role/github-sruthishtechnologies-role
+          aws-region: ap-south-2
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: infra
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: infra
+        run: terraform plan -out=tfplan.binary
+
+      - name: Convert plan to JSON
+        working-directory: infra
+        run: terraform show -json tfplan.binary > plan.json
+
+      - name: Check secret exists
+        run: |
+          if [ -z "${{ secrets.INFRACOST_API_KEY }}" ]; then
+            echo "INFRACOST_API_KEY is EMPTY"
+            exit 1
+          else
+            echo "INFRACOST_API_KEY is configured"
+          fi
+
+      - name: Setup Infracost
+        uses: infracost/actions/setup@v3
+        with:
+          api-key: ${{ secrets.INFRACOST_API_KEY }}
+
+      - name: Generate cost estimate
+        working-directory: infra
+        run: |
+          infracost breakdown \
+            --path plan.json \
+            --format json \
+            --out-file infracost.json
+
+      - name: Block PR if cost increase is above limit
+        env:
+          MAX_MONTHLY_COST_INCREASE: 500
+        run: |
+          MONTHLY_DIFF=$(jq -r '.diffTotalMonthlyCost // 0' infra/infracost.json)
+
+          echo "Monthly cost increase: $MONTHLY_DIFF USD"
+          echo "Allowed monthly increase: $MAX_MONTHLY_COST_INCREASE USD"
+
+          if (( $(echo "$MONTHLY_DIFF > $MAX_MONTHLY_COST_INCREASE" | bc -l) )); then
+            echo "Cost increase is above allowed limit. PR is blocked."
+            exit 1
+          fi
+
+      - name: Comment cost on PR
+        run: |
+          infracost comment github \
+            --path infra/infracost.json \
+            --repo ${{ github.repository }} \
+            --pull-request ${{ github.event.pull_request.number }} \
+            --github-token ${{ secrets.GITHUB_TOKEN }} \
+            --behavior update
+
+      - name: Check cost threshold
+        working-directory: infra
+        run: |
+          infracost diff \
+            --path plan.json \
+            --format json \
+            --out-file diff.json
+
+          monthly_diff=$(jq '.diffTotalMonthlyCost' diff.json)
+
+          if (( $(echo "$monthly_diff > 8" | bc -l) )); then
+            echo "Cost increase is more than $8/month. Approval required."
+            exit 1
+          fi
