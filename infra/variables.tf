@@ -8,7 +8,7 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  default = "t4g.micro"
+  default = "t3.micro"
 }
 
 variable "root_volume_size" {
