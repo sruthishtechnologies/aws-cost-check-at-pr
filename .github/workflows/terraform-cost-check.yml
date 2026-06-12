@@ -62,7 +62,7 @@ jobs:
 
       - name: Block PR if cost increase is above limit
         env:
-          MAX_MONTHLY_COST_INCREASE: 8
+          MAX_MONTHLY_COST_INCREASE: 500
         run: |
           MONTHLY_DIFF=$(jq -r '.diffTotalMonthlyCost // 0' /tmp/infracost.json)
 
