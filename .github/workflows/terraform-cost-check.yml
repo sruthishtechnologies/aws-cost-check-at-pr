@@ -97,3 +97,12 @@ jobs:
             echo "Cost increase is more than $8/month. Approval required."
             exit 1
           fi
+
+      - name: Check Exception Label
+        id: exception
+        run: |
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'finops-team') }}" == "true" ]]; then
+            echo "approved=true" >> $GITHUB_OUTPUT
+          else
+            echo "approved=false" >> $GITHUB_OUTPUT
+          fi
