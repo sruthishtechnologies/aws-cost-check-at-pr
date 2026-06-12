@@ -1,3 +1,3 @@
-output "instance_type" {
-  value = aws_instance.demo.instance_type
-}
+#output "instance_type" {
+#  value = aws_instance.demo.instance_type
+#}
