@@ -64,7 +64,7 @@ jobs:
         env:
           MAX_MONTHLY_COST_INCREASE: 500
         run: |
-          MONTHLY_DIFF=$(jq -r '.diffTotalMonthlyCost // 0' /tmp/infracost.json)
+          MONTHLY_DIFF=$(jq -r '.diffTotalMonthlyCost // 0' infra/infracost.json)
 
           echo "Monthly cost increase: $MONTHLY_DIFF USD"
           echo "Allowed monthly increase: $MAX_MONTHLY_COST_INCREASE USD"
