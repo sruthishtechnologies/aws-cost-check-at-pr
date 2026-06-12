@@ -60,6 +60,20 @@ jobs:
             --format json \
             --out-file infracost.json
 
+      - name: Block PR if cost increase is above limit
+        env:
+          MAX_MONTHLY_COST_INCREASE: 8
+        run: |
+          MONTHLY_DIFF=$(jq -r '.diffTotalMonthlyCost // 0' /tmp/infracost.json)
+
+          echo "Monthly cost increase: $MONTHLY_DIFF USD"
+          echo "Allowed monthly increase: $MAX_MONTHLY_COST_INCREASE USD"
+
+          if (( $(echo "$MONTHLY_DIFF > $MAX_MONTHLY_COST_INCREASE" | bc -l) )); then
+            echo "Cost increase is above allowed limit. PR is blocked."
+            exit 1
+          fi
+
       - name: Comment cost on PR
         run: |
           infracost comment github \
