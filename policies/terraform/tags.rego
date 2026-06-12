@@ -1,28 +1,20 @@
 package terraform.tags
 
-deny[msg] {
-  resource := input.resource_changes[_]
-  resource.mode == "managed"
-
-  not resource.change.after.tags.Environment
-
-  msg := sprintf("%s missing Environment tag", [resource.address])
+required_tags := {
+  "Environment",
+  "Owner",
+  "CostCenter"
 }
 
 deny[msg] {
   resource := input.resource_changes[_]
-  resource.mode == "managed"
 
-  not resource.change.after.tags.CostCenter
+  tag := required_tags[_]
 
-  msg := sprintf("%s missing CostCenter tag", [resource.address])
-}
+  not resource.change.after.tags[tag]
 
-deny[msg] {
-  resource := input.resource_changes[_]
-  resource.mode == "managed"
-
-  not resource.change.after.tags.Owner
-
-  msg := sprintf("%s missing Owner tag", [resource.address])
+  msg := sprintf(
+    "%s missing tag %s",
+    [resource.address, tag]
+  )
 }
