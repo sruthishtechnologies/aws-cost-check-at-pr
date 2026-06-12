@@ -1,0 +1,7 @@
+title = "Custom Gitleaks Rules"
+
+[[rules]]
+id = "terraform-aws-secret-access-key"
+description = "Detect AWS_SECRET_ACCESS_KEY in Terraform"
+regex = '''AWS_SECRET_ACCESS_KEY[\s\S]{0,100}default\s*=\s*"[^"]+"'''
+tags = ["aws", "terraform", "secret"]
