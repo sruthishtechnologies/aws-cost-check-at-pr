@@ -18,6 +18,7 @@ provider "aws" {
 resource "aws_instance" "demo" {
   ami           = var.ami_id
   instance_type = var.instance_type
+  associate_public_ip_address = false
 
   root_block_device {
     volume_size = var.root_volume_size
@@ -26,7 +27,8 @@ resource "aws_instance" "demo" {
 
   tags = {
     Name        = "infracost-demo"
-    Environment = "dev"
+    Environment = "Dev"
     CostCenter  = "sre-training"
+    Service     = "Demo-Service"
   }
 }
