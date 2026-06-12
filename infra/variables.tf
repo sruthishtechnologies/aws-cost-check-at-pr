@@ -17,5 +17,5 @@ variable "root_volume_size" {
 
 # Below variable to test secrets scanner
 variable "AWS_SECRET_ACCESS_KEY" {
-  default = "123"
+  default = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 }
