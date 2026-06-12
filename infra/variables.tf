@@ -8,9 +8,14 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  default = "t4g.micro"
+  default = "t3.micro"
 }
 
 variable "root_volume_size" {
   default = 20
+}
+
+# Below variable to test secrets scanner
+variable "AWS_SECRET_ACCESS_KEY" {
+  default = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 }
